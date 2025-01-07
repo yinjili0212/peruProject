@@ -1,0 +1,130 @@
+
+#设置当前支持的环境，如10.128.231.170，环境
+current_env:
+  'env102'
+
+env102:
+  key: 'fdzzffoovbh1k352e06dqf548fson3'#head头中TOS&bms规定的key
+  httpserverip: '10.128.254.17:8089'#httpserver端口号
+#  bmshttpip: 'http://10.28.243.103:8003'#bms1的IP地址
+##  bmshttpip: 'http://10.128.254.17:8089'
+#  bmshttpip_1: 'http://10.28.243.103:8003'#bms1的IP地址
+#  bmshttpip_2: 'http://10.28.243.103:8003'#bms2的IP地址
+#  bmshttpip_3: 'http://10.28.243.103:8003'#bms3的IP地址
+#  bmshttpip_4: 'http://10.28.243.103:8003'#bms4的IP地址
+#  bmshttpip_5: 'http://10.28.243.103:8003'#bms5的IP地址
+  bmshttpip: 'http://10.128.231.136:8003'#bms1的IP地址
+#  bmshttpip: 'http://10.128.254.17:8089'
+  bmshttpip_1: 'http://10.128.231.136:8003'#bms1的IP地址
+  bmshttpip_2: 'http://10.128.231.136:8003'#bms2的IP地址
+  bmshttpip_3: 'http://10.128.231.136:8003'#bms3的IP地址
+  bmshttpip_4: 'http://10.128.231.136:8003'#bms4的IP地址
+  bmshttpip_5: 'http://10.128.231.136:8003'#bms5的IP地址
+
+  tosbmsurls: ['/api/stand/order/cancel','/api/stand/order/event','/api/stand/asc/update/info','/api/stand/area/info']
+  #bmstosurls: ['/api/stand/order/pull','/api/stand/order/checkTruck','/api/stand/order/progress','/api/stand/order/finish','/api/stand/order/abort','/api/stand/asc/update','/api/stand/bay/map','/api/stand/order/work/permission','/api/ocr/identify']
+  ocrbmsurls: ['/WellOcean/PostTruckNum','/WellOcean/PostCtnNum','/WellOcean/PostCtnDoorStatus','/WellOcean/PostOcrInfo']
+  #bmsocrurls: ['/WellOcean/GetTruckNum','/WellOcean/GetCtnNum','/WellOcean/GetCtnDoorStatus']
+  fmsbmsurls: ['/f2b/updateIntera','/f2b/reqPlcStatus']
+  #bmsfmsurls: ['/b2f/updateIntera']
+  accessbmsurls: ['/dms/ac2b/reqPlcStatus','/dms/ac2b/refreshPeopleCount']
+  #bmsaccessurls: ['/dms/b2ac/reqPeopleCountByBlockId','/dms/b2ac/reqAllPeopleCount']
+
+  logaddress: './tossimulator.log'#此程序打印日志的地址
+  opcuaip: 'opc.tcp://10.28.243.103:5600/'#OPCUA的地址
+  localSqllitedb: 'tosbms.db'
+  tosbmstaskcsv: 'tosbmstask.csv'
+
+  bmsdbhost: '10.128.231.131'
+  bmsdbuser: 'root'
+  bmsdbpassword: 'Zpmc@231.131'
+  bmsdbdatabase: 'bms_db1'
+
+  bmsoracledbhost: '10.128.231.88'
+  bmsoracledbuser: 'PERU_BMS'
+  bmsoracledbpassword: 'Zpmc#3261'
+  bmsoracledbdatabase: 'PERU_PRODUCT_DB'
+
+
+  tosdbhost: '10.128.231.131'
+  tosdbuser: 'root'
+  tosdbpassword: 'Zpmc@231.131'
+  tosdbdatabase: 'tosdb1'
+
+  ####QCMS相关配置
+
+  qcmsdbhost: '10.128.231.131'
+  qcmsdbuser: 'root'
+  qcmsdbpassword: 'Zpmc@231.131'
+  qcmsdbdatabase: 'qcms_db1'
+
+
+  qcmsip: '10.28.243.102'#QCMS的IP地址
+  qcmsippassword: 'Zpmc@243.102'#QCMS所在服务器的登陆密码
+  qcmsopcuaip: 'opc.tcp://10.28.243.102:5600/'#OPCUA的地址
+#  qcmshttpip: 'http://10.28.243.102:10087'#qcms 103的IP地址
+#  qcmshttpip_103: 'http://10.28.243.102:10087'#qcms 103的IP地址
+#  qcmshttpip_104: 'http://10.28.243.102:10088'#qcms 104的IP地址
+#  qcmshttpip_105: 'http://10.28.243.102:10089'#qcms 105的IP地址
+#  qcmshttpip_106: 'http://10.28.243.102:10090'#qcms 106的IP地址
+#  qcmshttpip_107: 'http://10.28.243.102:10091'#qcms 107的IP地址
+#  qcmshttpip_108: 'http://10.28.243.102:10092'#qcms 108的IP地址
+  qcmshttpip: 'http://10.128.231.136:10087'#qcms 103的IP地址
+#  qcmshttpip: 'http://10.128.231.132:10087'#qcms 103的IP地址
+  qcmshttpip_103: 'http://10.128.231.136:10087'#qcms 103的IP地址
+  qcmshttpip_104: 'http://10.128.231.136:10087'#qcms 104的IP地址
+  qcmshttpip_105: 'http://10.128.231.136:10087'#qcms 105的IP地址
+  qcmshttpip_106: 'http://10.128.231.136:10087'#qcms 106的IP地址
+  qcmshttpip_107: 'http://10.128.231.136:10087'#qcms 107的IP地址
+  qcmshttpip_108: 'http://10.128.231.136:10087'#qcms 108的IP地址
+  tosqcmstaskcsv: 'tosqcmstask.csv'
+#  tosqcmscsv: 'C:\Program Files (x86)\ZPMC\python完整脚本\bilu\SimulatorForQcms\tosqcmscsv.csv'
+#  qcmstosurls: ['/sts/p2m/queryMsTask/','/sts/p2m/plcStatus/','/sts/p2m/plcTaskStatus/']
+  tosqcmsurls: ['/sts/m2p/cancelTask/','/sts/m2p/updateTask/']
+  qcmsfmsurls: ['/q2f/updateIntera','/queryAllIntera']
+  fmsqcmsurls: ['/f2q/updateIntera/','/f2q/queryAllIntera/','/f2q/reqPlcStatus/']
+
+  qcmsoracledbhost: '10.128.231.88'
+  qcmsoracledbuser: 'PERU_QCMS'
+  qcmsoracledbpassword: 'Zpmc#3261'
+  qcmsoracledbdatabase: 'PERU_PRODUCT_DB'
+
+env131:
+  key: 'fdzzffoovbh1k352e06dqf548fson3'#head头中TOS&bms规定的key
+  httpserverip: '10.128.254.17:8089'#httpserver端口号
+  bmshttpip: 'http://10.128.231.131:8003'#bms的IP地址
+  tosbmsurls: ['/api/stand/order/cancel','/api/stand/order/event','/api/stand/asc/update/info','/api/stand/area/info']
+  #bmstosurls: ['/api/stand/order/pull','/api/stand/order/checkTruck','/api/stand/order/progress','/api/stand/order/finish','/api/stand/order/abort','/api/stand/asc/update','/api/stand/bay/map','/api/stand/order/work/permission','/api/ocr/identify']
+  ocrbmsurls: ['/WellOcean/PostTruckNum','/WellOcean/PostCtnNum','/WellOcean/PostCtnDoorStatus']
+  #bmsocrurls: ['/WellOcean/GetTruckNum','/WellOcean/GetCtnNum','/WellOcean/GetCtnDoorStatus']
+  fmsbmsurls: ['/f2b/updateIntera','/f2b/reqPlcStatus']
+  #bmsfmsurls: ['/b2f/updateIntera']
+  accessbmsurls: ['/dms/ac2b/reqPlcStatus','/dms/ac2b/refreshPeopleCount']
+  #bmsaccessurls: ['/dms/b2ac/reqPeopleCountByBlockId','/dms/b2ac/reqAllPeopleCount']
+
+  logaddress: './tossimulator.log'#此程序打印日志的地址
+  opcuaip: 'opc.tcp://10.128.231.131:5600/'#OPCUA的地址
+  localSqllitedb: 'tosbms.db'
+
+
+  bmsdbhost: '10.128.231.131'
+  bmsdbuser: 'root'
+  bmsdbpassword: 'Zpmc@231.131'
+  bmsdbdatabase: 'bms_db1'
+
+  tosdbhost: '10.128.231.131'
+  tosdbuser: 'root'
+  tosdbpassword: 'Zpmc@231.131'
+  tosdbdatabase: 'tosdb1'
+
+
+
+
+
+
+
+
+
+
+
+

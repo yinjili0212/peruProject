@@ -1,0 +1,2 @@
+taskId,taskVersion,stsNo,vbtId,taskType,equipmentType,wsHbCntrno,wsLbCntrno,wsHbOverLimitFlag,wsLbOverLimitFlag,wsHbDangerFlag,wsLbDangerFlag,spreaderStatus,wsSpreaderSize,wsHbISO,wsLbISO,pickupPermissionFlag,dropoffPermissionFlag,origWsLoc,origType,destWsLoc,destType,origHtsNoWs,origHtsPosWs,destHtsNoWs,destHtsPosWs,taskStatus,errorCode,errorMsg,operateTime,responseTime
+20240716,1,103,2001,DSCH,M,ZPMC0000000,ABCD0000000,N,N,,,1,3,20GP,20GP,1,1,220082,SHIP,103L3,AGV,,,V0000,CENTER,ENTERED,,,sysdate,sysdate

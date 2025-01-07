@@ -1,0 +1,2 @@
+aorId,taskId,ascId,orderType,status,operationProcess,prePickUpFlag,cntrId,cntrNo,cntrWeight,cntrHeight,cntrIso,cntrSize,cntrType,cntrId2,cntrNo2,cntrWeight2,cntrHeight2,cntrIso2,cntrSize2,cntrType2,origin,origin2,originType,destination,destination2,destinationType,posOnTruck,posOnTruck2,truckNo,truckType,laneNo,laneDirection
+1234,1234,204,PREP,SENT,S,0,1,ZPMC0000000,1000,PQ,20GP,20,GP,,,,,,,,A2-031-01-1,,YARD,A2-031-02-1,,YARD,,,,,,0
