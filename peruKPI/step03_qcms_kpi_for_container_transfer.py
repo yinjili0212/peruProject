@@ -7,7 +7,7 @@ stsNos=[103,104,105,106,107,108]
 #查询某个岸桥的qc_tos_Task，从而得到整条船作业的时间
 for stsNo_index,stsNo in enumerate(stsNos):#遍历岸桥编号
     #############步骤1：查询当前岸桥当前船舶VBT_ID下作业的开始时间和结束时间
-    querySqlForQcTosTasks = f"""select * from qc_tos_task  where STS_NO={stsNo} and VBT_ID=212448 order by RESPONSE_TIME asc"""
+    querySqlForQcTosTasks = f"""select * from qc_tos_task  where STS_NO={stsNo} and VBT_ID=212407 order by RESPONSE_TIME asc"""
     QcTosTaskQueryResults = o.query(querySqlForQcTosTasks)
     if len(QcTosTaskQueryResults)>=2:#如果检测到查询出来的数据大于=2条，才可
         minTimeQcTosTask = QcTosTaskQueryResults[0]['RESPONSE_TIME']#这条船的当前岸桥的最小时间,str类型
@@ -28,7 +28,7 @@ for stsNo_index,stsNo in enumerate(stsNos):#遍历岸桥编号
                     #TRANS_CHAIN_ID=qcContainerTransferQueryResult['TRANS_CHAIN_ID']
                     #TASK_ID=0
                     #VBT_ID
-                    insertSqlForQcmsKpiForCtnTransfer1 = f"""INSERT INTO qcms_kpi_for_container_transfer(QC_ID, TRANS_CHAIN_ID, TASK_ID, VBT_ID)VALUES({stsNo}, '{qcContainerTransferQueryResult['TRANS_CHAIN_ID']}',0,0)"""
+                    insertSqlForQcmsKpiForCtnTransfer1 = f"""INSERT INTO qcms_kpi_for_container_transfer(QC_ID, TRANS_CHAIN_ID, TASK_ID, TASK_TYPE,VBT_ID)VALUES({stsNo}, '{qcContainerTransferQueryResult['TRANS_CHAIN_ID']}',0,'',0)"""
                     try:
                         o.executesql(insertSqlForQcmsKpiForCtnTransfer1)
                     except Exception as e:  # 涉及到唯一值的异常
@@ -42,7 +42,7 @@ for stsNo_index,stsNo in enumerate(stsNos):#遍历岸桥编号
                     qcTosTask2EQueryResults = o.query(querySqlForQcTosTask2s)
                     if len(qcTosTask2EQueryResults)!=0:#能查询出来数据
                         # VBT_ID=qcTosTask2EQueryResults[0]['VBT_ID']
-                        insertSqlForQcmsKpiForCtnTransfer =f"""INSERT INTO qcms_kpi_for_container_transfer(QC_ID, TRANS_CHAIN_ID, TASK_ID, VBT_ID)VALUES({stsNo}, '{qcContainerTransferQueryResult['TRANS_CHAIN_ID']}', {qcTrolleyTaskQueryResults[0]['TASK_REF_ID']}, {qcTosTask2EQueryResults[0]['VBT_ID']})"""
+                        insertSqlForQcmsKpiForCtnTransfer =f"""INSERT INTO qcms_kpi_for_container_transfer(QC_ID, TRANS_CHAIN_ID, TASK_ID, TASK_TYPE,VBT_ID)VALUES({stsNo}, '{qcContainerTransferQueryResult['TRANS_CHAIN_ID']}', {qcTrolleyTaskQueryResults[0]['TASK_REF_ID']}, '{qcTosTask2EQueryResults[0]['TASK_TYPE']}',{qcTosTask2EQueryResults[0]['VBT_ID']})"""
                         try:
                             o.executesql(insertSqlForQcmsKpiForCtnTransfer)
                         except Exception as e:#涉及到唯一值的异常

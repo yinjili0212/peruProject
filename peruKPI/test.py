@@ -41,33 +41,43 @@ import plotly.graph_objects as go
 
 xvalues = ['2025-01-02 10:00:00', '2025-01-02 11:00:00', '2025-01-02 12:00:00', '2025-01-02 13:00:00', '2025-01-02 14:00:00']
 yvalues = [3, 4, 13, 0, 4]
+yvalues2 = [3, 4, 13, 0, 4]
 texts = [f'HAha {i}' for i in yvalues]  # 为每个点创建文本标签
+# 计算相加后的 y 值
+yvalues_stacked = [a + b for a, b in zip(yvalues, yvalues2)]
+
+
 
 fig = go.Figure()
 fig.add_trace(go.Scatter(
     x=xvalues,
-    y=yvalues,
+    y=yvalues_stacked,
     mode='lines',  # 绘制散点并连接成线
-    name='毛效率趋势图',
+    name='岸桥毛效率趋势图',
     text=texts,  # 设置每个点的文本标签
     line=dict(color='black', width=2, dash='solid'),
     marker=dict(size=10)  # 可选：设置散点的大小
 ))
-fig.add_trace(go.Bar(x=xvalues,y=yvalues,marker=dict(color='blue', line=dict(width=0, color='black')),width=0.3,name='毛效率条形图'))
+fig.add_trace(go.Bar(x=xvalues,y=yvalues,marker=dict(color='#782D32', line=dict(width=0, color='black')),width=0.3,name='装船'))
+fig.add_trace(go.Bar(x=xvalues,y=yvalues2,marker=dict(color='#323A45', line=dict(width=0, color='black')),width=0.3,name='卸船'))
 
+
+
+# 设置布局以堆叠条形图
+fig.update_layout(barmode='stack')
 # # 设置文本标签的位置，这里设置为 'top center' 表示在点的上方居中显示
 # fig.update_traces(textposition='top center')
 # 添加注释（此注释不会随数据点移动）
 fig.add_annotation(
     x=xvalues[0],  # 注释的 x 位置（这里以第一个数据点的 x 坐标为例）
-    y=yvalues[0]+0.5,  # 注释的 y 位置（这里以第一个数据点的 y 坐标为例）
+    y=yvalues_stacked[0]+0.5,  # 注释的 y 位置（这里以第一个数据点的 y 坐标为例）
     text='这是一个注释',  # 注释的文本内容
     showarrow=False # 是否显示箭头
 )
 
 # 更新布局
 fig.update_layout(
-    title='散点图示例',
+    title='岸桥毛效率',
     xaxis_title='时间',
     yaxis_title='值',
     xaxis_type='category'  # 确保 x 轴被解释为类别标签
