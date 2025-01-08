@@ -38,6 +38,7 @@
 
 
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 xvalues = ['2025-01-02 10:00:00', '2025-01-02 11:00:00', '2025-01-02 12:00:00', '2025-01-02 13:00:00', '2025-01-02 14:00:00']
 yvalues = [3, 4, 13, 0, 4]
