@@ -11,10 +11,10 @@ import os
 
 # o=sqliteHandle.sqliteHandler(r'E:\python完整脚本\bilu\KPI20250103\kpiforQcms20250103.db')
 # o=sqliteHandle.sqliteHandler(r'E:\pythonlearn\KPI\KPI20241223\kpiforQcms20241223.db')
-o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250103.db')
+o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
 
 #设置需要写入目标表的表名字
-tablename_for_kpi='kpi_for_qcms212467'
+tablename_for_kpi='kpi_for_qcms212427'
 
 # stsids = ['103']
 stsids = ['103','104','105','106','107','108']
@@ -378,7 +378,7 @@ for stsid_index,stsid in enumerate(stsids):#遍历岸桥号
                         titleforsingle=f'''岸桥{stsid}的{filenameFortime}整点时间内所有任务明细'''
                         fig.update_layout(title=titleforsingle)#更新整张表的标题
 
-                        output_path=f"./{filenameFortime1}documents_vbt_id_{wholeTimeTasksQueryResults.iloc[0]['VBT_ID']}/{stsid}/岸桥{stsid}的整点时间内{filenameFortime}任务明细.html"
+                        output_path=f"./{filenameFortime1}documents_vbt_id_{wholeTimeTasksQueryResults.iloc[0]['VBT_ID']}/{stsid}/岸桥{stsid}的整点时间内{filenameFortime}任务明细.png"
                         # 提取目录路径
                         directory = os.path.dirname(output_path)
                         # 检查目录是否存在，如果不存在则创建
@@ -387,4 +387,8 @@ for stsid_index,stsid in enumerate(stsids):#遍历岸桥号
 
                         #保存图形到html格式
                         fig.write_html(output_path, full_html=False)
+                        # fig.write_image(output_path)
+                        # fig.write_image('船舶212427岸桥毛效率.png')  # 保存为 PNG 图片
+                        # fig.write_image('船舶212427岸桥毛效率.jpeg')  # 保存为 JPEG 图片
+                        # fig.write_image('船舶212427岸桥毛效率.svg')  # 保存为 SVG 图片
 

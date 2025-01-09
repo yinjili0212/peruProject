@@ -11,7 +11,7 @@ o=sqliteHandle.sqliteHandler('kpiforQcms20250109.db')
 # 212507
 qcms_kpi_for_container_transfer='qcms_kpi_for_container_transfer'
 qc_tos_task='qc_tos_task'
-VBT_ID=212448
+VBT_ID=212427
 #只是为了画图得到当前船舶的作业时间
 querySqlVbtIdTimes = f"""select * from {qc_tos_task}  where VBT_ID={VBT_ID} and RESPONSE_TIME!='' order by STS_NO asc"""
 vbtIdTimesQueryResults = o.query(querySqlVbtIdTimes,t='df')
@@ -141,8 +141,8 @@ if isinstance(stsNosQueryResults,pd.DataFrame):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    # # 保存图形到html格式
-    # fig.write_html(output_path, full_html=False)
+    # 保存图形到html格式
+    fig.write_html(output_path, full_html=False)
 
 
 

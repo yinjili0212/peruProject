@@ -2,11 +2,16 @@ import sqliteHandle
 import datetime
 from basicFunctionDefine import *
 import time
+
+
+# 212427
+# 212507
+
 # o=sqliteHandle.sqliteHandler(r'E:\python完整脚本\bilu\KPI20250103\kpiforQcms20250103.db')
 # o=sqliteHandle.sqliteHandler(r'E:\pythonlearn\KPI\KPI20241223\kpiforQcms20241223.db')
-o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250103.db')
+o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
 # qc_tos_tasks_queryresults = o.query("select * from qc_tos_task where TASK_ID=53459 or TASK_ID=53443 order by TASK_ID asc")
-qc_tos_tasks_queryresults = o.query("select * from qc_tos_task where VBT_ID=212448 order by TASK_ID asc")
+qc_tos_tasks_queryresults = o.query("select * from qc_tos_task where VBT_ID=212427 order by TASK_ID asc")
 # qc_tos_tasks_queryresults = o.query("select * from qc_tos_task where STS_NO='106' order by TASK_ID asc")#按照岸桥编号查询
 # qc_tos_tasks_queryresults = o.query("select * from qc_tos_task where TASK_ID in ('53443','53453','53459','53465','53468','53471','53472','53475','53481','53485') order by TASK_ID asc")
 
