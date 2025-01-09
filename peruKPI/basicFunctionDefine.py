@@ -36,6 +36,40 @@ def wholeHourTime(inputTime):#inputTime可以是str可以是datetime.datetime类
 
     return previous_whole_hour#得到的结果是整点时间2024-12-20 20:00:00，类型为<class 'datetime.datetime'>
 
+# def wholeHourTimeEnd(inputTime):#inputTime可以是str可以是datetime.datetime类型,得到整点时间如"2024-12-20 20:09:38.607000"
+#     if isinstance(inputTime,str):#如果判断输入的类型是str类型，则按照下列逻辑计算出来这个时间对应的整点时间
+#         inputTime = strChangeTime(inputTime)
+#
+#         previous_whole_hour = inputTime.replace(hour=(inputTime.hour+1), minute=0, second=0, microsecond=0)
+#     if isinstance(inputTime,datetime):#如果判断输入的类型是str类型，则按照下列逻辑计算出来这个时间对应的整点时间
+#         previous_whole_hour = inputTime.replace(hour=(inputTime.hour+1), minute=0, second=0, microsecond=0)
+#
+#     return previous_whole_hour#得到的结果是整点时间2024-12-20 20:00:00，类型为<class 'datetime.datetime'>
+
+
+def wholeHourTimeEnd(inputTime):  # inputTime可以是str可以是datetime.datetime类型,得到整点时间如"2024-12-20 20:09:38.607000"
+    if isinstance(inputTime, str):  # 如果判断输入的类型是str类型，则按照下列逻辑计算出来这个时间对应的整点时间
+        inputTime = strChangeTime(inputTime)
+        if inputTime.hour == 23:
+            # 如果是23点，则日期加一天，小时设为0
+            next_day = inputTime + timedelta(days=1)
+            previous_whole_hour = next_day.replace(hour=0, minute=0, second=0, microsecond=0)
+        else:
+            previous_whole_hour = inputTime.replace(hour=(inputTime.hour + 1), minute=0, second=0, microsecond=0)
+    if isinstance(inputTime, datetime):
+        if inputTime.hour == 23:
+            # 如果是23点，则日期加一天，小时设为0
+            next_day = inputTime + timedelta(days=1)
+            previous_whole_hour = next_day.replace(hour=0, minute=0, second=0, microsecond=0)
+        else:
+            # 如果判断输入的类型是str类型，则按照下列逻辑计算出来这个时间对应的整点时间
+            previous_whole_hour = inputTime.replace(hour=(inputTime.hour + 1), minute=0, second=0, microsecond=0)
+
+    return previous_whole_hour  # 得到的结果是整点时间2024-12-20 20:00:00，类型为<class 'datetime.datetime'>
+
+
+
+
 def wholeHourTimes(startTime, endTime):#输入的可以是str也可以是datetime类型：2024-12-20 20:00:00;
     startWholeTime=wholeHourTime(startTime)
     endWholeTime=wholeHourTime(endTime)
@@ -49,6 +83,22 @@ def wholeHourTimes(startTime, endTime):#输入的可以是str也可以是datetim
         # 将当前时间增加一小时
         startWholeTime = startWholeTime+timedelta(hours=1)
     return whole_hours#得到的结果是一个lists，但是lists里面是str类型['2024-12-20 20:00:00', '2024-12-20 21:00:00', '2024-12-20 22:00:00']
+
+
+def wholeHourTimeEnds(startTime, endTime):#输入的可以是str也可以是datetime类型：2024-12-20 20:00:00;
+    startWholeTime=wholeHourTimeEnd(startTime)
+    endWholeTime=wholeHourTimeEnd(endTime)
+    # 存储整点时间的列表
+    whole_hours = []
+    # 遍历直到当前时间超过结束时间
+    while startWholeTime <= endWholeTime:
+        # # 获取当前时间的整点时间（将分钟、秒、微秒部分置零）
+        # whole_hour = start_time.replace(minute=0, second=0, microsecond=0)
+        whole_hours.append(startWholeTime.strftime('%Y-%m-%d %H:%M:%S'))
+        # 将当前时间增加一小时
+        startWholeTime = startWholeTime+timedelta(hours=1)
+    return whole_hours#得到的结果是一个lists，但是lists里面是str类型['2024-12-20 20:00:00', '2024-12-20 21:00:00', '2024-12-20 22:00:00']
+
 
 def convertUtc_5(inputUtcTime):#将当前时间UTC减去5个小时作为秘鲁利马本地时间
     """
