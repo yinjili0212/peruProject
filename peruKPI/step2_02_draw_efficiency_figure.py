@@ -11,7 +11,7 @@ o=sqliteHandle.sqliteHandler('kpiforQcms20250109.db')
 # 212507
 qcms_kpi_for_container_transfer='qcms_kpi_for_container_transfer'
 qc_tos_task='qc_tos_task'
-VBT_ID=212427
+VBT_ID=212507
 #只是为了画图得到当前船舶的作业时间
 querySqlVbtIdTimes = f"""select * from {qc_tos_task}  where VBT_ID={VBT_ID} and RESPONSE_TIME!='' order by STS_NO asc"""
 vbtIdTimesQueryResults = o.query(querySqlVbtIdTimes,t='df')
@@ -38,6 +38,9 @@ if isinstance(stsNosQueryResults,pd.DataFrame):
         if isinstance(QcTosTaskQueryResult_dfs, pd.DataFrame):#能查询出来数据并且是pan.DataFrame类型
             minTimeQcTosTask=QcTosTaskQueryResult_dfs['RESPONSE_TIME'].min()
             maxTimeQcTosTask=QcTosTaskQueryResult_dfs['RESPONSE_TIME'].max()
+            print(stsNo)
+            print(minTimeQcTosTask,maxTimeQcTosTask)
+
 
             #########查询qcms_kpi_for_container_transfer
             querySqlForQcmsKpiForCtnTransfer = f"""select * from {qcms_kpi_for_container_transfer} where GROUND_TIME>='{minTimeQcTosTask}' and GROUND_TIME<='{maxTimeQcTosTask}' and QC_ID={stsNo} order by GROUND_TIME asc"""
@@ -94,6 +97,7 @@ if isinstance(stsNosQueryResults,pd.DataFrame):
                     dsch_values = [dictForFig['DSCH'] for dictForFig in taskcounts]
                     others_values = [dictForFig['Others'] for dictForFig in taskcounts]
 
+
                     # 计算相加后的 y 值
                     scatteervalues_stacked = [a + b+c for a, b,c in zip(load_values, dsch_values,others_values)]
 
@@ -101,12 +105,20 @@ if isinstance(stsNosQueryResults,pd.DataFrame):
                     load_texts=['LOAD '+str(dictForFig['LOAD']) for dictForFig in taskcounts]
                     dsch_texts = ['DSCH ' + str(dictForFig['DSCH']) for dictForFig in taskcounts]
                     others_texts = ['Others ' + str(dictForFig['Others']) for dictForFig in taskcounts]
+                    alltasks_texts = ['all ' + str(dictForFig) for dictForFig in scatteervalues_stacked]
 
 
-                    ####开始画图
-                    fig.add_trace(go.Bar(x=stsnoWholeTimes, y=load_values,marker=dict(color='#782D32'),name='LOAD',text=load_texts,textposition='inside'), row=stsNo_index+1, col=1)
+
+
+                    #单独的类型条形图，
+                    fig.add_trace(go.Bar(x=stsnoWholeTimes, y=load_values,marker=dict(color='#782D32'),name='LOAD',text=load_texts,textposition='inside'), row=stsNo_index+1, col=1)#'outside';'inside';'auto';'none'
                     fig.add_trace(go.Bar(x=stsnoWholeTimes, y=dsch_values,marker=dict(color='#323A45'),name='DSCH',text=dsch_texts,textposition='inside'), row=stsNo_index + 1, col=1)
                     fig.add_trace(go.Bar(x=stsnoWholeTimes, y=others_values,marker=dict(color='#FED961'),name='OtherTask',text=others_texts,textposition='inside'), row=stsNo_index + 1, col=1)
+
+                    # ####开始画图'outside';'inside';'auto';'none'
+                    # fig.add_trace(
+                    #     go.Bar(x=stsnoWholeTimes, y=scatteervalues_stacked, marker=dict(color='#000000',opacity=0), name='alltasks',
+                    #            text=alltasks_texts, textposition='inside'), row=stsNo_index + 1, col=1)
                     print('*************')
                     print(stsNo)
                     print(stsnoWholeTimes)
@@ -118,19 +130,33 @@ if isinstance(stsNosQueryResults,pd.DataFrame):
                     fig.add_trace(go.Scatter(
                         x=stsnoWholeTimes,
                         y=scatteervalues_stacked,
-                        mode='lines',  # 绘制散点并连接成线
+                        mode='lines+markers',  # 绘制散点并连接成线
                         name='岸桥毛效率趋势图',
                         # text=scatteervalues_stacked,  # 设置每个点的文本标签
                         # textposition='outside',  # 设置每个点的文本标签
                         line=dict(color='black', width=2, dash='solid'),
-                        marker=dict(size=10)  # 可选：设置散点的大小
+                        marker=dict(size=5,symbol='square')  # 可选：设置散点的大小
                     ), row=stsNo_index+1, col=1)
-                    #更新子图的x轴和y轴文字标注
+                    print(type(stsnoWholeTimes))
+                    print(stsnoWholeTimes)
+
+                    # # 更新布局以将x轴设置为时间轴
+                    # fig.update_layout(xaxis_type='category')
+
+                    for indexFortext,stsnoWholeTime in enumerate(stsnoWholeTimes):
+                        fig.add_annotation(
+                            dict(x=stsnoWholeTime,
+                                 y=scatteervalues_stacked[indexFortext]+1,  # y 位置
+                                 text=scatteervalues_stacked[indexFortext],
+                                 showarrow=False,font=dict(size=18,color='red'),xref=f"x{stsNo_index+1}", yref=f"y{stsNo_index+1}"))# font=dict(size=20,color='red'),
+
+                    # 更新子图的x轴和y轴文字标注
                     fig.update_xaxes(title_text='时间整点', row=stsNo_index + 1, col=1)
                     fig.update_yaxes(title_text=f'效率 move/h', row=stsNo_index + 1, col=1)
+
     # 更新图表的布局，例如为两个子图分别设置标题
     # 设置布局以堆叠条形图
-    fig.update_layout(barmode='stack')
+    fig.update_layout(barmode='stack')#'group'分组，stack堆叠，overlay覆盖；relative相对
     fig.update_layout(
         title_text=f"船舶{VBT_ID}岸桥毛效率图")
     # fig.show()

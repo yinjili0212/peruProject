@@ -65,7 +65,7 @@ class sqliteHandler:
         self.cur.execute(sql)
         self.conn.commit()
 
-    def createTable(self, tableName):
+    def createKpiForQcmsTable(self, tableName):#kpi_for_qcms
         try:
             # 注意：这个查询在不同的 SQLite 版本和/或不同的 SQL 模式（如标准 SQL 模式与 SQLite 的特定扩展）中可能有所不同。
             # 下面的查询是为了获取创建表的 SQL 语句，但这通常不是标准 SQL 的一部分。SQLite 提供了 .schema 命令，但它不是通过 SQL 查询访问的。

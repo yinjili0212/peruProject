@@ -3,18 +3,11 @@ import datetime
 from basicFunctionDefine import *
 import time
 
-
-# 212427
-# 212507
-
-# o=sqliteHandle.sqliteHandler(r'E:\python完整脚本\bilu\KPI20250103\kpiforQcms20250103.db')
-# o=sqliteHandle.sqliteHandler(r'E:\pythonlearn\KPI\KPI20241223\kpiforQcms20241223.db')
+#连接数据库
 o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
-# qc_tos_tasks_queryresults = o.query("select * from qc_tos_task where TASK_ID=53459 or TASK_ID=53443 order by TASK_ID asc")
-qc_tos_tasks_queryresults = o.query("select * from qc_tos_task where VBT_ID=212427 order by TASK_ID asc")
-# qc_tos_tasks_queryresults = o.query("select * from qc_tos_task where STS_NO='106' order by TASK_ID asc")#按照岸桥编号查询
-# qc_tos_tasks_queryresults = o.query("select * from qc_tos_task where TASK_ID in ('53443','53453','53459','53465','53468','53471','53472','53475','53481','53485') order by TASK_ID asc")
 
+#根据船舶ID查询QCMS收到的TOS任务
+qc_tos_tasks_queryresults = o.query("select * from qc_tos_task where VBT_ID=212507 order by TASK_ID asc")
 
 
 
@@ -24,7 +17,7 @@ if qc_tos_tasks_queryresults!=[]:#能查询出来数据
     tablename_for_kpi = f"""kpi_for_qcms{qc_tos_tasks_queryresults[0]['VBT_ID']}"""
 
     #如果表不存在则创建表
-    o.createTable(tablename_for_kpi)
+    o.createKpiForQcmsTable(tablename_for_kpi)
 
     o.executesql(f'delete from {tablename_for_kpi}')
     time.sleep(0.5)
@@ -42,7 +35,7 @@ if qc_tos_tasks_queryresults!=[]:#能查询出来数据
             i==7时处理QC_TP_INTERACTION_HIS表的数据
             i==8时处理ACCS的'kpi_mt_step_log'的数据
             '''
-            if i==0:#作为创建时间时间的判断
+            if i==0:#作为创建时间的判断
                 querysqlforcreates = o.query(f"select * from qc_tos_task_his where TRIGGER_ACTION='INSERT' and TASK_ID={qc_tos_tasks_queryresult['TASK_ID']} order by TRIG_CREATED desc")#查询创建时间
                 if len(querysqlforcreates)!=0:#能查询出来数据，将第一条数据对应的时间插入到KPI
                     for querysqlforcreate in querysqlforcreates:#遍历历史表中INSERT的语句，插入几次就是几次

@@ -14,7 +14,7 @@ import os
 o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
 
 #设置需要写入目标表的表名字
-tablename_for_kpi='kpi_for_qcms212427'
+tablename_for_kpi='kpi_for_qcms212507'
 
 # stsids = ['103']
 stsids = ['103','104','105','106','107','108']
@@ -86,8 +86,8 @@ for stsid_index,stsid in enumerate(stsids):#遍历岸桥号
                         for index_x, forstsno_taskQueryResult in forstsno_taskQueryResults.iterrows():  # forstsno_taskQueryResults.iterrows对查询出来的任务画图
                             querysqlforstsno_task = f"SELECT * FROM {tablename_for_kpi} WHERE STS_NO = '{stsid}' and TASK_ID={forstsno_taskQueryResult['TASK_ID']} order by KEYTIME asc"  #
                             filtered_df=o.query(querysqlforstsno_task,t='df')
-                            # filtered_df['KEYTIME'] = pd.to_datetime(filtered_df['KEYTIME'],format='mixed')#利用pandas将数据转为时间格式
-                            filtered_df['KEYTIME'] = pd.to_datetime(filtered_df['KEYTIME'])  # 利用pandas将数据转为时间格式
+                            filtered_df['KEYTIME'] = pd.to_datetime(filtered_df['KEYTIME'],format='mixed')#利用pandas将数据转为时间格式
+                            # filtered_df['KEYTIME'] = pd.to_datetime(filtered_df['KEYTIME'])  # 利用pandas将数据转为时间格式
                             if filtered_df is not None:#查询出来的数据不为空
                                 # 对于每个时间点，添加一条垂直线
                                 # #创建要画的图
@@ -378,7 +378,7 @@ for stsid_index,stsid in enumerate(stsids):#遍历岸桥号
                         titleforsingle=f'''岸桥{stsid}的{filenameFortime}整点时间内所有任务明细'''
                         fig.update_layout(title=titleforsingle)#更新整张表的标题
 
-                        output_path=f"./{filenameFortime1}documents_vbt_id_{wholeTimeTasksQueryResults.iloc[0]['VBT_ID']}/{stsid}/岸桥{stsid}的整点时间内{filenameFortime}任务明细.png"
+                        output_path=f"./{filenameFortime1}documents_vbt_id_{wholeTimeTasksQueryResults.iloc[0]['VBT_ID']}/{stsid}/岸桥{stsid}的整点时间内{filenameFortime}任务明细.html"
                         # 提取目录路径
                         directory = os.path.dirname(output_path)
                         # 检查目录是否存在，如果不存在则创建

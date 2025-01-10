@@ -11,7 +11,7 @@ qc_trolley_task='qc_trolley_task'
 
 # 212427
 # 212507
-VBT_ID=212507
+VBT_ID=212427
 
 
 stsNos=[103,104,105,106,107,108]

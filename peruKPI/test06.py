@@ -18,6 +18,30 @@
 # #     print(i)
 
 
-import sqliteHandle
-import pandas as pd
-o=sqliteHandle.sqliteHandler('kpiforQcms20250109.db')
+# import sqliteHandle
+# import pandas as pd
+# o=sqliteHandle.sqliteHandler('kpiforQcms20250109.db')
+
+import plotly.graph_objs as go
+
+# 假设您有一些数据
+x_data = [1, 2, 3, 4, 5]
+y_data = [10, 15, 13, 17, 16]
+texts = ['all 0', 'all 12', 'all 12', 'all 10', 'all 7']  # 注释文本列表
+
+# 创建数据痕迹
+trace = go.Scatter(x=x_data, y=y_data, mode='markers')
+
+# 创建注释列表
+annotations = []
+for i, text in enumerate(texts):
+    annotations.append(dict(text=text, x=x_data[i], y=y_data[i], xref='x', yref='y', showarrow=True,font=dict(size=24)))
+
+# 创建图表布局并添加注释
+layout = go.Layout(annotations=annotations)
+
+# 创建图表对象并添加痕迹和布局
+fig = go.Figure(data=[trace], layout=layout)
+
+# 显示图表
+fig.show()
