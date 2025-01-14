@@ -7,10 +7,13 @@ from basicFunctionDefine import *
 import ast
 import datetime
 import os
-# o=sqliteHandle.sqliteHandler('kpiForEcs.db')
+#########
+'''
+1.根据kpi_for_qcms的数据画对应的图，任务执行时间，指令执行时间，单机KPI记录的时间
+'''
+#########
 
-# o=sqliteHandle.sqliteHandler(r'E:\python完整脚本\bilu\KPI20250103\kpiforQcms20250103.db')
-# o=sqliteHandle.sqliteHandler(r'E:\pythonlearn\KPI\KPI20241223\kpiforQcms20241223.db')
+
 o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
 
 #设置需要写入目标表的表名字

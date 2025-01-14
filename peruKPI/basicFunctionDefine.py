@@ -1,5 +1,7 @@
 from datetime import datetime,timedelta
 import pandas as pd
+import time
+import threading
 
 def strChangeTime(inputStrTime):#定义字符串改为时间格式，字符串可以是'2024-12-21 16:46:39.151'格式或者'2024-12-21 16:46:39',
     # 定义时间字符串的格式
@@ -226,3 +228,85 @@ def timeChange(td):#将'0 days 00:00:01.749000'格式化为00:00:01格式,td=# �
     formatted_time = f"{formatted_hours}:{formatted_minutes}:{formatted_seconds}"
 
     return formatted_time
+
+#生成唯一的ID
+class Snowflake:
+    def __init__(self, datacenter_id=1, machine_id=1, sequence=0):
+        """
+        初始化雪花算法生成器
+        :param datacenter_id: 数据中心ID (0-31)
+        :param machine_id: 机器ID (0-31)
+        :param sequence: 序列号起始值 (默认为0)
+        """
+        if datacenter_id > 31 or datacenter_id < 0:
+            raise ValueError("Datacenter ID must be between 0 and 31")
+        if machine_id > 31 or machine_id < 0:
+            raise ValueError("Machine ID must be between 0 and 31")
+
+        self.datacenter_id = datacenter_id
+        self.machine_id = machine_id
+        self.sequence = sequence
+
+        self.lock = threading.Lock()
+
+        # 开始时间戳（自定义一个起始时间，可以根据需要调整）
+        self.epoch = 1288834974657  # 2010-11-04 05:42:54.657
+
+        # 时间戳左移位数
+        self.timestamp_left_shift = 22
+        # 数据中心ID左移位数
+        self.datacenter_id_left_shift = 17
+        # 机器ID左移位数
+        self.machine_id_left_shift = 12
+
+        # 上次生成ID的时间戳
+        self.last_timestamp = -1
+
+    def _current_millis(self):
+        """
+        获取当前时间戳（毫秒）
+        """
+        return int(time.time() * 1000)
+
+    def _wait_for_next_millis(self, last_timestamp):
+        """
+        等待直到下一毫秒
+        """
+        timestamp = self._current_millis()
+        while timestamp <= last_timestamp:
+            timestamp = self._current_millis()
+        return timestamp
+
+    def next_id(self):
+        """
+        生成下一个ID
+        """
+        with self.lock:
+            timestamp = self._current_millis()
+
+            if timestamp < self.last_timestamp:
+                raise Exception("Clock moved backwards. Refusing to generate id")
+
+            if timestamp == self.last_timestamp:
+                self.sequence = (self.sequence + 1) & 4095  # 12位序列，最大值为4095
+                if self.sequence == 0:
+                    timestamp = self._wait_for_next_millis(self.last_timestamp)
+            else:
+                self.sequence = self.sequence
+
+            self.last_timestamp = timestamp
+
+            # 移动并组合各个部分
+            id = ((timestamp - self.epoch) << self.timestamp_left_shift) | \
+                 (self.datacenter_id << self.datacenter_id_left_shift) | \
+                 (self.machine_id << self.machine_id_left_shift) | \
+                 self.sequence
+
+            return id
+
+#定义雪花算法中生成唯一的一个ID
+def snowFlakeId():
+    sf = Snowflake()
+    for i in range(1):
+        snowflakeonlyid = sf.next_id()
+    return snowflakeonlyid

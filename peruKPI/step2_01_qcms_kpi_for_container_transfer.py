@@ -1,7 +1,15 @@
 from basicFunctionDefine import *
 import sqliteHandle
 
+
+#########
+'''
+1.根据船舶作业的开始时间和结束时间，统计时间段内QCMS抓放记录
+'''
+#########
 o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
+
+
 
 qcms_kpi_for_container_transfer='qcms_kpi_for_container_transfer'
 qc_tos_task='qc_tos_task'
@@ -13,6 +21,8 @@ qc_trolley_task='qc_trolley_task'
 # 212507
 VBT_ID=212427
 
+# 如果表不存在则创建表
+o.createQcmsKpiForContainerTransferTable(qcms_kpi_for_container_transfer)
 
 stsNos=[103,104,105,106,107,108]
 # stsNos=[103]

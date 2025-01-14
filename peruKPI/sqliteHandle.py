@@ -108,6 +108,49 @@ class sqliteHandler:
                 # 其他类型的操作错误
                 print(f"Unexpected error: {e}")
 
+    def createQcmsKpiForContainerTransferTable(self, tableName):#kpi_for_qcms
+        try:
+            # 注意：这个查询在不同的 SQLite 版本和/或不同的 SQL 模式（如标准 SQL 模式与 SQLite 的特定扩展）中可能有所不同。
+            # 下面的查询是为了获取创建表的 SQL 语句，但这通常不是标准 SQL 的一部分。SQLite 提供了 .schema 命令，但它不是通过 SQL 查询访问的。
+            # 因此，这里我们使用一个变通方法：创建一个临时表，然后使用 .schema 命令获取其创建语句，然后解析或修改它以用于新表。
+            # 但是，这种方法比较复杂且容易出错。更简单的方法是预先知道 kpi_for_qcms 表的结构，并手动编写创建 test 表的 SQL 语句。
+
+            # 由于直接获取创建语句的方法不可行，我们将采用手动编写 SQL 语句的方法。
+            # 假设你知道 kpi_for_qcms 表的结构，这里是一个示例创建语句（你需要根据实际情况修改它）：
+            create_table_sql = f"""
+            CREATE TABLE IF NOT EXISTS {tableName} (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                QC_ID INTEGER,
+                TRANS_CHAIN_ID TEXT UNIQUE,
+                TASK_ID INTEGER,
+                TASK_TYPE TEXT,
+                VBT_ID INTEGER,
+                PICKUP_LOCATION TEXT,
+                GROUND_LOCATION TEXT,
+                PICKUP_TIME TEXT,
+                GROUND_TIME TEXT,
+                Pickup_OPERATE_MODE TEXT,
+                Ground_OPERATE_MODE TEXT,
+                SPREADER_SIZE TEXT)
+            """
+
+            # 执行创建表的 SQL 语句（但实际上由于使用了 IF NOT EXISTS，如果表已存在则不会创建）
+            self.cur.execute(create_table_sql)
+
+            # 提交事务
+            self.conn.commit()
+
+            print(f"Table {tableName} created (or already existed).")
+        except sqlite3.OperationalError as e:
+            # 处理任何操作错误，比如表不存在于数据库中时尝试查询其结构
+            if "no such table" in str(e):
+                # 在这里，我们实际上已经处理了表不存在的情况，因为我们使用了 IF NOT EXISTS。
+                # 但是，如果是因为其他原因导致的错误（比如语法错误），我们需要在这里处理它。
+                print(f"Error occurred while checking or creating table: {e}")
+            else:
+                # 其他类型的操作错误
+                print(f"Unexpected error: {e}")
+
 
     def executesql(self, sql):
         self.cur.execute(sql)

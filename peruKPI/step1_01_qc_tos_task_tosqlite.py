@@ -2,7 +2,17 @@ import sqliteHandle
 import datetime
 from basicFunctionDefine import *
 import time
-
+#########
+'根据船舶靠泊的VBT_ID查询这个船舶作业的开始时间和结束时间，以及在期间内QCMS拉取过的任务，以及每个任务中指令的情况' \
+'1.处理任务创建时间，使用的是QC_TOS_TASK_HIS中TRIGGER_ACTION="INSERT"的数据作为任务开始时间'
+'2.处理任务闭锁时间，使用的是QC_TOS_TASK中LOCK_TIME和UNLOCK_TIME字段的数据作为任务开始时间'
+'3.处理任务完成时间（删除时间，因为QCMS拉取TOS任务时可能存在重复的任务），使用的是QC_TOS_TASK_HIS中TRIGGER_ACTION="DELETE"的数据作为任务开始时间'
+'4.处理大车运行的指令，使用的是QC_GANTRY_INSTRUCTION中的数据'
+'5.处理QC_TROLLEY_INSTRUCRION的指令'
+'6.处理QC_CONTAINER_TRANSFER的指令'
+'7.处理交互表QC_TP_INTERACTION_HIS的数据'
+'''8.处理ACCS的kpi_mt_step_log的数据'''
+#########
 #连接数据库
 o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
 
@@ -208,7 +218,7 @@ if qc_tos_tasks_queryresults!=[]:#能查询出来数据
                                 if index_gantry_single==1:#插入指令END_TIME时间
                                     DATA_FROM='QCMSDB.QC_GANTRY_INSTRUCTION.END_TIME'#需要改的部分
                                     DATA_FROM_TYPE='QCMS'
-                                    NOTES= f"""大车指令开始时间，指令状态{qcGantryInstructionqueryresult['INSTR_STATE']}"""#需要改的部分
+                                    NOTES= f"""大车指令结束时间，指令状态{qcGantryInstructionqueryresult['INSTR_STATE']}"""#需要改的部分
                                     insertsql = f'''insert into {tablename_for_kpi}(\
                                     STS_NO,\
                                     TASK_ID,\

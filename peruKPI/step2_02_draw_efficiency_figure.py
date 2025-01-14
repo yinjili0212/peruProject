@@ -5,6 +5,11 @@ from plotly.subplots import make_subplots
 import numpy as np
 import os
 
+#########
+'''
+1.根据船舶作业的开始时间和结束时间，画出每个岸桥作业的毛效率图
+'''
+#########
 o=sqliteHandle.sqliteHandler('kpiforQcms20250109.db')
 # stsNos=[103,104,105,106,107,108]
 # 212427
