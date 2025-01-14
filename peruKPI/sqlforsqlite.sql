@@ -136,10 +136,43 @@ delete from kpi_for_qcms  where DATA_FROM='QCMSDB.QC_TOS_TASK_HIS.TRIGGER_ACTION
 
 alter table kpi_for_qcms add column TASK_REF_ID INTEGER;
 alter table kpi_for_qcms add column TASK_ID_FOR_GANTRY TEXT;
+alter table kpi_for_qcms add column INSTR_ID_FOR_MT_TROLLEY TEXT;
+alter table kpi_for_qcms add column TASK_REF_ID_FOR_MT_TROLLEY INTEGER;
+alter table kpi_for_qcms add column TASK_ID_FOR_MT_TROLLEY TEXT;
+
+alter table kpi_for_qcms add column TRANS_CHAIN_ID  TEXT;
+alter table kpi_for_qcms add column OPERATE_MODE_FOR_CTNTRANS  TEXT;
+alter table kpi_for_qcms add column SPREADER_SIZE_FOR_CTNTRANS  TEXT;
+alter table kpi_for_qcms add column WORK_LOCATION_FOR_CTNTRANS  TEXT;
 
 TASK_REF_ID
 
 
 select * from QC_GANTRY_INSTRUCTION where (START_TIME>'2025-01-08 12:57:15' and START_TIME<'2025-01-09 20:17:41') or (END_TIME>'2025-01-08 12:57:15' and END_TIME<'2025-01-09 20:17:41') order by START_TIME asc
+
+delete from kpi_for_qcms 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -21,6 +21,8 @@ QC_TOS_TASK='QC_TOS_TASK'
 QC_TOS_TASK_HIS='QC_TOS_TASK_HIS'
 tablename_for_kpi='kpi_for_qcms'
 QC_GANTRY_INSTRUCTION='QC_GANTRY_INSTRUCTION'
+QC_TROLLEY_INSTRUCTION='QC_TROLLEY_INSTRUCTION'
+QC_CONTAINER_TRANSFER='QC_CONTAINER_TRANSFER'
 #连接数据库
 o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
 
@@ -133,7 +135,7 @@ o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
 # )'''
 #                 o.executesql(insertsql)
 #         #####INSERT过的数据处理插入###########
-
+#
 #         #####DELETE过的数据处理插入###########
 #         #同一条任务可能QCMS拉取过多次，因此，QCMS可能删除过多次，需要将QC_TOS_TASK_HIS的数据也拉出来看看，到底DELETE过几次
 #         qcTosTaskHisQuerySql=f"""select * from {QC_TOS_TASK_HIS} where TRIGGER_ACTION='DELETE' and TASK_ID={qcTosTaskQueryResult['TASK_ID']} order by TRIG_CREATED asc"""
@@ -175,9 +177,6 @@ o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
 # ##############################################################################QC_GANTRY_INSTRUCTION表的计算
 # querysqlforQcGantryInstruction= f"""select * from {QC_GANTRY_INSTRUCTION} where (START_TIME>'{startTime}' and START_TIME<'{endTime}') or (END_TIME>'{startTime}' and END_TIME<'{endTime}') order by START_TIME asc"""
 # qcGantryInstructionQueryResults = o.query(querysqlforQcGantryInstruction,t='df')
-# print(querysqlforQcGantryInstruction)
-#
-# print(qcGantryInstructionQueryResults)
 # if isinstance(qcGantryInstructionQueryResults,pd.DataFrame):#遍历大车移动过的数据
 #     for qcGantryInstructionQueryResult in qcGantryInstructionQueryResults.iterrows():
 #         DATA_FROM = 'QCMSDB.QC_GANTRY_INSTRUCTION.START_TIME'  # 需要改的部分
@@ -225,6 +224,126 @@ o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
 #         # print(insertsql)
 #         o.executesql(insertsql)
 # ##############################################################################
+
+
+
+
+
+
+# ##############################################################################QC_TROLLEY_INSTRUCTION表的计算
+# QcTrolleyInstruction= f"""select * from {QC_TROLLEY_INSTRUCTION} where (START_TIME>'{startTime}' and START_TIME<'{endTime}') or (END_TIME>'{startTime}' and END_TIME<'{endTime}') order by START_TIME asc"""
+# QcTrolleyInstructionQueryResults = o.query(QcTrolleyInstruction,t='df')
+# if isinstance(QcTrolleyInstructionQueryResults,pd.DataFrame):#遍历小车执行过的数据
+#     for QcTrolleyInstructionQueryResult in QcTrolleyInstructionQueryResults.iterrows():
+#         DATA_FROM =f'''QCMSDB.QC_TROLLEY_INSTRUCTION.{QcTrolleyInstructionQueryResult[1]['INSTR_TYPE']}.START_TIME'''  # 需要改的部分
+#         DATA_FROM_TYPE='QCMS'
+#         NOTES= f"""小车指令开始时间，指令类型{QcTrolleyInstructionQueryResult[1]['INSTR_TYPE']}，指令状态{QcTrolleyInstructionQueryResult[1]['INSTR_STATE']}"""#需要改的部分
+#         insertsql = f'''insert into {tablename_for_kpi}(\
+#         STS_NO,\
+#         INSTR_ID_FOR_MT_TROLLEY,\
+#         TASK_REF_ID_FOR_MT_TROLLEY,\
+#         TASK_ID_FOR_MT_TROLLEY,\
+#         KEYTIME,\
+#         DATA_FROM,\
+#         DATA_FROM_TYPE,\
+#         NOTES) VALUES (
+#         '{QcTrolleyInstructionQueryResult[1]['QC_ID']}',\
+#         '{QcTrolleyInstructionQueryResult[1]['INSTR_ID']}',\
+#         {QcTrolleyInstructionQueryResult[1]['TASK_REF_ID']},\
+#         '{QcTrolleyInstructionQueryResult[1]['TASK_ID']}',\
+#         '{QcTrolleyInstructionQueryResult[1]['START_TIME']}',\
+#         '{DATA_FROM}',\
+#         '{DATA_FROM_TYPE}',\
+#         '{NOTES}'\
+#         )'''
+#         # print(insertsql)
+#         o.executesql(insertsql)
+#
+#
+#         DATA_FROM =f'''QCMSDB.QC_TROLLEY_INSTRUCTION.{QcTrolleyInstructionQueryResult[1]['INSTR_TYPE']}.END_TIME'''  # 需要改的部分
+#         DATA_FROM_TYPE='QCMS'
+#         NOTES= f"""小车指令结束时间，指令类型{QcTrolleyInstructionQueryResult[1]['INSTR_TYPE']}，指令状态{QcTrolleyInstructionQueryResult[1]['INSTR_STATE']}"""#需要改的部分
+#         insertsql = f'''insert into {tablename_for_kpi}(\
+#         STS_NO,\
+#         INSTR_ID_FOR_MT_TROLLEY,\
+#         TASK_REF_ID_FOR_MT_TROLLEY,\
+#         TASK_ID_FOR_MT_TROLLEY,\
+#         KEYTIME,\
+#         DATA_FROM,\
+#         DATA_FROM_TYPE,\
+#         NOTES) VALUES (
+#         '{QcTrolleyInstructionQueryResult[1]['QC_ID']}',\
+#         '{QcTrolleyInstructionQueryResult[1]['INSTR_ID']}',\
+#         {QcTrolleyInstructionQueryResult[1]['TASK_REF_ID']},\
+#         '{QcTrolleyInstructionQueryResult[1]['TASK_ID']}',\
+#         '{QcTrolleyInstructionQueryResult[1]['END_TIME']}',\
+#         '{DATA_FROM}',\
+#         '{DATA_FROM_TYPE}',\
+#         '{NOTES}'\
+#         )'''
+#         # print(insertsql)
+#         o.executesql(insertsql)
+# ##############################################################################
+
+
+
+
+# ##############################################################################QC_CONTAINER_TRANSFER表的计算
+# QcContainerTransferQuerySql= f"""select * from {QC_CONTAINER_TRANSFER} where (CREATE_TIME>'{startTime}' and CREATE_TIME<'{endTime}') and GANTRY_POSITION!=0 and TROLLEY_POSITION!=0 and HOIST_POSITION!=0 order by CREATE_TIME asc"""
+# QcContainerTransferQueryResults = o.query(QcContainerTransferQuerySql,t='df')
+# if isinstance(QcContainerTransferQueryResults,pd.DataFrame):#遍历
+#     for QcContainerTransferQueryResult in QcContainerTransferQueryResults.iterrows():
+#         DATA_FROM = f'''QCMSDB.QC_CONTAINER_TRANSFER.{QcContainerTransferQueryResult[1]['INSTR_TYPE']}.CREATE_TIME'''  # 需要改的部分
+#         DATA_FROM_TYPE='QCMS'
+#         NOTES= f"""抓放箱记录指令类型{QcContainerTransferQueryResult[1]['INSTR_TYPE']}，吊具尺寸{QcContainerTransferQueryResult[1]['SPREADER_SIZE']}"""#需要改的部分
+#         insertsql = f'''insert into {tablename_for_kpi}(\
+#         STS_NO,\
+#         TRANS_CHAIN_ID,\
+#         OPERATE_MODE_FOR_CTNTRANS,\
+#         SPREADER_SIZE_FOR_CTNTRANS,\
+#         WORK_LOCATION_FOR_CTNTRANS,\
+#         KEYTIME,\
+#         DATA_FROM,\
+#         DATA_FROM_TYPE,\
+#         NOTES) VALUES (
+#         '{QcContainerTransferQueryResult[1]['QC_ID']}',\
+#         '{QcContainerTransferQueryResult[1]['TRANS_CHAIN_ID']}',\
+#         '{QcContainerTransferQueryResult[1]['OPERATE_MODE']}',\
+#         '{QcContainerTransferQueryResult[1]['SPREADER_SIZE']}',\
+#         '{QcContainerTransferQueryResult[1]['WORK_LOCATION']}',\
+#         '{QcContainerTransferQueryResult[1]['CREATE_TIME']}',\
+#         '{DATA_FROM}',\
+#         '{DATA_FROM_TYPE}',\
+#         '{NOTES}'\
+#         )'''
+#         # print(insertsql)
+#         o.executesql(insertsql)
+# ##############################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
