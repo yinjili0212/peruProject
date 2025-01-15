@@ -152,6 +152,14 @@ select * from QC_GANTRY_INSTRUCTION where (START_TIME>'2025-01-08 12:57:15' and 
 
 delete from kpi_for_qcms 
 
+alter table kpi_for_qcms add column PAIRED_VALUE  INTEGER;
+
+paired value
+
+alter table kpi_for_qcms add column TRANS_CHAIN_ID  TEXT;
+
+insert into kpi_for_qcms(                        STS_NO,                        KEYTIME,                        DATA_FROM,                        DATA_FROM_TYPE,                        NOTES) VALUES (
+                '103',                '2024-12-16 22:03:01',                'QCMSDB.QC_TP_INTERACTION_HIS.103.1.dict_values(['C', '504', 'LOAD', 'ARRIVED'])',                'QCMS',                "交互状态{'FMS_JOB_POS': 'C', 'FMS_AHT_ID': '504', 'FMS_MOVE_KIND': 'LOAD', 'FMS_AHT_STATUS': 'ARRIVED'}")
 
 
 
@@ -160,8 +168,8 @@ delete from kpi_for_qcms
 
 
 
-
-
+select * from kpi_for_qcms where DATA_FROM_TYPE='OPCUA'
+delete from kpi_for_qcms where DATA_FROM_TYPE='OPCUA'
 
 
 
