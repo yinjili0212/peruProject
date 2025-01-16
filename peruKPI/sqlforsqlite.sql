@@ -92,6 +92,10 @@ update MtWorkMode set notes='Maintenance Mode' where Value=2;
 update MtWorkMode set notes='Normal Mode' where Value=1;
 
 
+update MtWorkMode set notes='';
+update MtWorkMode set QC_ID='';
+
+
 
 alter table MtInstructionStatus  add column notes TEXT;
 alter table MtInstructionStatus add column QC_ID TEXT;
@@ -99,14 +103,17 @@ update MtInstructionStatus set notes='Ready for ECS' where Value=1;
 update MtInstructionStatus set notes='Not ready for ECS' where Value=2;
 
 
-
-
+update MtInstructionStatus set notes=''
+update MtInstructionStatus set QC_ID=''
 
 alter table MhAboveSafeHeight  add column notes TEXT;
 alter table MhAboveSafeHeight add column QC_ID TEXT;
 update MhAboveSafeHeight set notes='Below' where Value=2;
 update MhAboveSafeHeight set notes='Above' where Value=1;
 
+
+update MhAboveSafeHeight set notes=''
+update MhAboveSafeHeight set QC_ID=''
 
 
 delete from MtWorkMode where StatusCode='BadCommunicationError';
@@ -171,12 +178,39 @@ insert into kpi_for_qcms(                        STS_NO,                        
 select * from kpi_for_qcms where DATA_FROM_TYPE='OPCUA'
 delete from kpi_for_qcms where DATA_FROM_TYPE='OPCUA'
 
+alter table kpi_for_qcms add column TASK_ID_FOR_KPI_MT INTEGER;
 
 
+-- kpi_for_qcms definition
 
+CREATE TABLE kpi_for_qcms1 (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                PAIRED_VALUE  INTEGER, 
+                STS_NO TEXT,
+                TASK_ID INTEGER,
+                TASK_ID_FOR_GANTRY TEXT,
+                TASK_ID_FOR_MT_TROLLEY TEXT,
+                TASK_ID_FOR_KPI_MT INTEGER,
+                TASK_REF_ID_FOR_MT_TROLLEY INTEGER,
+                INSTR_ID_FOR_MT_TROLLEY TEXT,
+                TASK_REF_ID_FOR_GANTRY INTEGER,
+				TRANS_CHAIN_ID  TEXT,                
+                VBT_ID INTEGER,
+                TASK_TYPE TEXT,
+                TASK_STATUS TEXT,
+                ORIG_WSLOC TEXT,
+                DEST_WS_LOC TEXT,
+                KEYTIME TEXT,
+                DATA_FROM TEXT,
+                DATA_FROM_TYPE TEXT,
+                NOTES TEXT,                
+				OPERATE_MODE_FOR_CTNTRANS  TEXT, 
+        SPREADER_SIZE_FOR_CTNTRANS  TEXT, 
+       WORK_LOCATION_FOR_CTNTRANS  TEXT);
 
+select * from qc_event_recorder_his where CREATE_TIME>='2025-01-09 02:23:25' and CREATE_TIME<='2025-01-09 02:33:25' order by CREATE_TIME asc
 
-
+select DISTINCT  task_id from kpi_for_qcms1 kfq where STS_NO='104' order by KEYTIME asc
 
 
 
