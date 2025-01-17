@@ -10,20 +10,22 @@ import os
 1.根据船舶作业的开始时间和结束时间，画出每个岸桥作业的毛效率图
 '''
 #########
-o=sqliteHandle.sqliteHandler('kpiforQcms20250109.db')
+o=sqliteHandle.sqliteHandler('kpiforQcms.db')
 # stsNos=[103,104,105,106,107,108]
 # 212427
 # 212507
 qcms_kpi_for_container_transfer='qcms_kpi_for_container_transfer'
 qc_tos_task='qc_tos_task'
-VBT_ID=212507
+VBT_ID=212427
 #只是为了画图得到当前船舶的作业时间
 querySqlVbtIdTimes = f"""select * from {qc_tos_task}  where VBT_ID={VBT_ID} and RESPONSE_TIME!='' order by STS_NO asc"""
+# querySqlVbtIdTimes = f"""select * from {qc_tos_task}  where RESPONSE_TIME!='' order by STS_NO asc"""
 vbtIdTimesQueryResults = o.query(querySqlVbtIdTimes,t='df')
 
 
 
 querySqlStsNos = f"""select DISTINCT STS_NO from {qc_tos_task}  where VBT_ID={VBT_ID} and RESPONSE_TIME!='' order by STS_NO asc"""
+# querySqlStsNos = f"""select DISTINCT STS_NO from {qc_tos_task}  where RESPONSE_TIME!='' order by STS_NO asc"""
 stsNosQueryResults = o.query(querySqlStsNos,t='df')
 if isinstance(stsNosQueryResults,pd.DataFrame):
     stsNos = stsNosQueryResults['STS_NO'].tolist()####打印出来设备编号
@@ -39,6 +41,7 @@ if isinstance(stsNosQueryResults,pd.DataFrame):
     for stsNo_index,stsNo in enumerate(stsNos):#遍历岸桥编号
         #############步骤1：查询当前岸桥当前船舶VBT_ID下作业的开始时间和结束时间
         querySqlForQcTosTasks = f"""select * from {qc_tos_task}  where STS_NO={stsNo} and VBT_ID={VBT_ID} and RESPONSE_TIME!='' order by RESPONSE_TIME asc"""
+        # querySqlForQcTosTasks = f"""select * from {qc_tos_task}  where STS_NO={stsNo} and RESPONSE_TIME!='' order by RESPONSE_TIME asc"""
         QcTosTaskQueryResult_dfs = o.query(querySqlForQcTosTasks,t='df')
         if isinstance(QcTosTaskQueryResult_dfs, pd.DataFrame):#能查询出来数据并且是pan.DataFrame类型
             minTimeQcTosTask=QcTosTaskQueryResult_dfs['RESPONSE_TIME'].min()
@@ -165,7 +168,7 @@ if isinstance(stsNosQueryResults,pd.DataFrame):
     fig.update_layout(
         title_text=f"船舶{VBT_ID}岸桥毛效率图")
     # fig.show()
-    output_path = f"./documents/船舶{VBT_ID}岸桥毛效率.html"
+    output_path = f"./documents_vbt_id/船舶{VBT_ID}岸桥毛效率.html"
     # 提取目录路径
     directory = os.path.dirname(output_path)
     # 检查目录是否存在，如果不存在则创建

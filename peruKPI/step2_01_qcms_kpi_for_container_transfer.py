@@ -7,7 +7,7 @@ import sqliteHandle
 1.根据船舶作业的开始时间和结束时间，统计时间段内QCMS抓放记录
 '''
 #########
-o=sqliteHandle.sqliteHandler(r'./kpiforQcms20250109.db')
+o=sqliteHandle.sqliteHandler(r'./kpiforQcms.db')
 
 
 
