@@ -10,6 +10,8 @@ delete from qc_tos_task_his;
 delete from qc_tp_interaction_his;
 delete from qc_trolley_instruction;
 delete from qc_trolley_task;
+DELETE FROM kpi_for_qcms;
+delete from qcms_kpi_for_container_transfer;
 
 
 select DISTINCT VBT_ID from qc_tos_task_his order by TRIG_CREATED desc;

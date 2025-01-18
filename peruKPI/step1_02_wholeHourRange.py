@@ -99,20 +99,21 @@ if isinstance(tableForKpiQueryResults,pd.DataFrame):
 if minTime!='' and maxTime!='':#最大和最小时间均能找到
     # print(minTime,maxTime)
     for stsid in stsids:#遍历岸桥编号
-        wholeHourTimes=wholeHourTimeEnds(minTime,maxTime)
+        wholeHourTimes=wholeHourTime3Ends(minTime,maxTime)
         if wholeHourTimes!=[]:#能查询出整点时间
             for wholeHourTimeIndex,wholeHourTime in enumerate(wholeHourTimes):
                 # #创建要画的图
                 fig = make_subplots(cols=1, rows=1, subplot_titles='')  # cols表示设备数量，rows表示最大任务数量
                 if wholeHourTimeIndex==0:#查询出第一个整点时间
-                    querysqlforstsno_task = f"SELECT * FROM {tablename_for_kpi} WHERE STS_NO = '{stsid}' and KEYTIME<='{wholeHourTime}' and DATA_FROM_TYPE!='KPI' order by KEYTIME asc"
+                    querysqlforstsno_task = f"SELECT * FROM {tablename_for_kpi} WHERE STS_NO = '{stsid}' and KEYTIME<='{wholeHourTime}' order by KEYTIME asc"
                 else:#查询出第一个整点时间
-                    querysqlforstsno_task = f"SELECT * FROM {tablename_for_kpi} WHERE STS_NO = '{stsid}' and (KEYTIME>='{wholeHourTimes[wholeHourTimeIndex-1]}' and KEYTIME<='{wholeHourTime}') and DATA_FROM_TYPE!='KPI' order by KEYTIME asc"
+                    querysqlforstsno_task = f"SELECT * FROM {tablename_for_kpi} WHERE STS_NO = '{stsid}' and (KEYTIME>='{wholeHourTimes[wholeHourTimeIndex-1]}' and KEYTIME<='{wholeHourTime}') order by KEYTIME asc"
                 print(querysqlforstsno_task)
 
                 filtered_dfs=o.query(querysqlforstsno_task,t='df')#整点时间内的数据
                 if isinstance(filtered_dfs,pd.DataFrame):#能查询出来数据
-                    filtered_dfs['KEYTIME'] = pd.to_datetime(filtered_dfs['KEYTIME'], format='mixed')  # 利用pandas将数据转为时间格式
+                    # filtered_dfs['KEYTIME'] = pd.to_datetime(filtered_dfs['KEYTIME'], format='mixed')  # 利用pandas将数据转为时间格式
+                    filtered_dfs['KEYTIME'] = pd.to_datetime(filtered_dfs['KEYTIME'])  # 利用pandas将数据转为时间格式
                     for idx, row in filtered_dfs.iterrows():  # forstsno_taskQueryResults.iterrows对查询出来的任务画图
                         #创建散点图，将每个时间节点都打印出来
                         if row['DATA_FROM_TYPE']=='QCMS' or row['DATA_FROM_TYPE']=='OPCUA':
@@ -176,12 +177,11 @@ if minTime!='' and maxTime!='':#最大和最小时间均能找到
                                      y=(qcms_min+qcms_max)/2,  # y 位置为矩形高度的一半
                                      text=f'{durationforqctask}',
                                      showarrow=False, xref="x1", yref="y1"))
-                        elif qcdeleteStart_Qcmsindexs==[]:#表示没有找到删除过的信息，则以开锁时间为画任务持续图
-                            # 查找任务中有无删除过数据，则需要判断当前任务解锁的时间
+                        elif qcdeleteStart_Qcmsindexs==[]:#表示没有找到删除过的信息，则以放箱结束时间为画任务持续图
+                            # 查找任务中有无删除过数据，则需要判断当前放箱结束时间的时间
                             matching_rows_for_qctaskends = filtered_dfs[
-                                (filtered_dfs['TASK_ID'] == qctaskstart['TASK_ID']) &
-                                (filtered_dfs['KEYTIME'] >= qctaskstart['KEYTIME']) &
-                                (filtered_dfs['DATA_FROM'] == 'QCMSDB.QC_TOS_TASK.UNLOCK_TIME')]
+                                (filtered_dfs['KEYTIME'] > qctaskstart['KEYTIME']) &
+                                (filtered_dfs['DATA_FROM'] == 'QCMSDB.QC_TROLLEY_INSTRUCTION.Ground.END_TIME')]
                             qcend_Qcmsindexs = matching_rows_for_qctaskends.index.tolist()  # [1,3]查询出来的是个列表
                             if qcend_Qcmsindexs != []:  # 表示UNLOCK_TIME数据能查到，则找第一条数据，画出图
                                 qctaskend = filtered_dfs.iloc[qcend_Qcmsindexs[0]]  # 开始的某一行数据
@@ -190,7 +190,7 @@ if minTime!='' and maxTime!='':#最大和最小时间均能找到
                                 # 计算持续时间
                                 durationforqctask = qctaskend['KEYTIME'] - qctaskstart['KEYTIME']
                                 durationforqctask = timeChange(durationforqctask)
-                                namefortask = f"""QCMS整个任务{qctaskend['TASK_ID']}持续的时间{durationforqctask}，任务类型:{qctaskend['TASK_TYPE']},任务状态:{qctaskend['TASK_STATUS']},任务初始位置:{qctaskend['ORIG_WSLOC']},任务目的位置:{qctaskend['DEST_WS_LOC']}"""
+                                namefortask = f"""QCMS整个任务{qctaskstart['TASK_ID']}持续的时间{durationforqctask}，任务类型:{qctaskstart['TASK_TYPE']},任务状态:{qctaskstart['TASK_STATUS']},任务初始位置:{qctaskstart['ORIG_WSLOC']},任务目的位置:{qctaskstart['DEST_WS_LOC']}"""
                                 fig.add_trace(go.Scatter(
                                     x=[qctaskstart['KEYTIME'], qctaskstart['KEYTIME'], qctaskend['KEYTIME'],
                                        qctaskend['KEYTIME'], qctaskstart['KEYTIME']],
@@ -202,7 +202,7 @@ if minTime!='' and maxTime!='':#最大和最小时间均能找到
                                          y=(qcms_min + qcms_max) / 2,  # y 位置为矩形高度的一半
                                          text=f'{durationforqctask}',
                                          showarrow=False, xref="x1", yref="y1"))
-                            else:#开锁时间也找不到，则以整点最后时间为结束画任务图
+                            else:#Ground时间也找不到，则以整点最后时间为结束画任务图
                                 # 计算持续时间
                                 durationforqctask = strChangeTime(wholeHourTime) - qctaskstart['KEYTIME']
                                 durationforqctask = timeChange(durationforqctask)
@@ -464,77 +464,78 @@ if minTime!='' and maxTime!='':#最大和最小时间均能找到
 
 
 
-                    # ###############画出KPI发送的各种step指令的填充图
-                    # # 假设 filtered_df 是你的 DataFrame，且包含 DATA_FROM 列,filtered_df类型=<class 'pandas.core.frame.DataFrame'>
-                    # # 使用布尔索引来查找 DATA_FROM 字段等于特定值'KPIDB.kpi_mt_step_log.21.start_time'的行
-                    # steps = [11,12,13,14,15,16,17,18,21,22,23,24,25,26,27,28,31,32,33,34,35,36,37,38]
-                    # for step in steps:#遍历step的值
-                    #     if step in [11,12,13,14,15,16,17,18]:
-                    #         color_for_kpi=color_for_gantt_green
-                    #     elif step in [21,22,23,24,25,26,27,28]:
-                    #         color_for_kpi = color_for_gantt_red
-                    #     elif step in [31,32,33,34,35,36,37,38]:
-                    #         color_for_kpi = color_for_gantt_red
-                    #
-                    #     matching_rows_for_stepstart = filtered_dfs[
-                    #         filtered_dfs['DATA_FROM'] == f'KPIDB.kpi_mt_step_log.{step}.start_time']
-                    #     # 从匹配的行中提取索引值
-                    #     stepStart_kpiindexs = matching_rows_for_stepstart.index.tolist()#[1,3]查询出来的是个列表
-                    #
-                    #     for stepStart_kpiindex in stepStart_kpiindexs:#查询QCMSground指令发送的所有值
-                    #         stepstart = filtered_dfs.iloc[stepStart_kpiindex]  # 开始的某一行数据
-                    #         ##################判断有无对应的end数据
-                    #         matching_rows_for_stepends = filtered_dfs[
-                    #             (filtered_dfs['PAIRED_VALUE'] == stepstart['PAIRED_VALUE']) &
-                    #             (filtered_dfs['DATA_FROM'] == f'KPIDB.kpi_mt_step_log.{step}.end_time')]
-                    #         # 判断查询出来的数据是否为空
-                    #         # 从匹配的行中提取索引值
-                    #         stepend_Qcmsindexs = matching_rows_for_stepends.index.tolist()  # [1,3]查询出来的是个列表
-                    #         if stepend_Qcmsindexs!=[]:#表示end数据能查到，则找第一条数据，画出图
-                    #             stepend = filtered_dfs.iloc[stepend_Qcmsindexs[0]]  # 结束的某一行数据
-                    #
-                    #             # 计算持续时间
-                    #             durationforstep = stepend['KEYTIME'] - stepstart['KEYTIME']
-                    #             durationforstep = timeChange(durationforstep)
-                    #
-                    #
-                    #             namefortask=f"kpi发送step={step}指令{stepTransToLanguage(step)}到完成的时间{durationforstep}"
-                    #             fig.add_trace(go.Scatter(
-                    #                 x=[stepstart['KEYTIME'], stepstart['KEYTIME'], stepend['KEYTIME'], stepend['KEYTIME'],
-                    #                    stepstart['KEYTIME']],
-                    #                 y=[kpistep_min, kpistep_max, kpistep_max, kpistep_min, kpistep_min], fill='toself',
-                    #                 fillcolor=color_for_kpi, line=dict(color='black'),
-                    #                 name=namefortask), row=1, col=1)
-                    #             # # 注意：这里的位置是手动设置的，可能需要根据实际情况调整
-                    #
-                    #             fig.add_annotation(
-                    #                 dict(x=stepstart['KEYTIME'] + (stepend['KEYTIME'] - stepstart['KEYTIME']) / 2,
-                    #                      # x 位置为两个 KEYTIME 的中点
-                    #                      y=(kpistep_min + kpistep_max) / 2,  # y 位置为矩形高度的一半
-                    #                      text=f"""{durationforstep}""",
-                    #                      showarrow=False, xref=f"x1", yref=f"y1"))
-                    #         else:  # 表示end数据找不到，则以整点结束时间为最后时间画图
-                    #             # 计算持续时间
-                    #             durationforstep = strChangeTime(wholeHourTime) - stepstart['KEYTIME']
-                    #             durationforstep = timeChange(durationforstep)
-                    #
-                    #             namefortask = f"kpi发送step={step}指令{stepTransToLanguage(step)}到完成的时间{durationforstep}"
-                    #             fig.add_trace(go.Scatter(
-                    #                 x=[stepstart['KEYTIME'], stepstart['KEYTIME'], strChangeTime(wholeHourTime),
-                    #                    strChangeTime(wholeHourTime),
-                    #                    stepstart['KEYTIME']],
-                    #                 y=[kpistep_min, kpistep_max, kpistep_max, kpistep_min, kpistep_min], fill='toself',
-                    #                 fillcolor=color_for_kpi, line=dict(color='black'),
-                    #                 name=namefortask), row=1, col=1)
-                    #             # # 注意：这里的位置是手动设置的，可能需要根据实际情况调整
-                    #
-                    #             fig.add_annotation(
-                    #                 dict(x=stepstart['KEYTIME'] + (strChangeTime(wholeHourTime) - stepstart['KEYTIME']) / 2,
-                    #                      # x 位置为两个 KEYTIME 的中点
-                    #                      y=(kpistep_min + kpistep_max) / 2,  # y 位置为矩形高度的一半
-                    #                      text=f"""{durationforstep}""",
-                    #                      showarrow=False, xref=f"x1", yref=f"y1"))
-                    # #########################################kpi_mt_step_log逻辑
+                    ###############画出KPI发送的各种step指令的填充图
+                    # 假设 filtered_df 是你的 DataFrame，且包含 DATA_FROM 列,filtered_df类型=<class 'pandas.core.frame.DataFrame'>
+                    # 使用布尔索引来查找 DATA_FROM 字段等于特定值'KPIDB.kpi_mt_step_log.21.start_time'的行
+                    steps = [11,12,13,14,15,16,17,18,21,22,23,24,25,26,27,28,31,32,33,34,35,36,37,38]
+                    for step in steps:#遍历step的值
+                        if step in [11,12,13,14,15,16,17,18]:
+                            color_for_kpi=color_for_gantt_green
+                        elif step in [21,22,23,24,25,26,27,28]:
+                            color_for_kpi = color_for_gantt_red
+                        elif step in [31,32,33,34,35,36,37,38]:
+                            color_for_kpi = color_for_gantt_red
+
+                        matching_rows_for_stepstart = filtered_dfs[
+                            filtered_dfs['DATA_FROM'] == f'KPIDB.kpi_mt_step_log.{step}.start_time']
+                        # 从匹配的行中提取索引值
+                        stepStart_kpiindexs = matching_rows_for_stepstart.index.tolist()#[1,3]查询出来的是个列表
+                        print(stepStart_kpiindexs)
+
+                        for stepStart_kpiindex in stepStart_kpiindexs:#查询QCMSground指令发送的所有值
+                            stepstart = filtered_dfs.iloc[stepStart_kpiindex]  # 开始的某一行数据
+                            ##################判断有无对应的end数据
+                            matching_rows_for_stepends = filtered_dfs[
+                                (filtered_dfs['PAIRED_VALUE'] == stepstart['PAIRED_VALUE']) &
+                                (filtered_dfs['DATA_FROM'] == f'KPIDB.kpi_mt_step_log.{step}.end_time')]
+                            # 判断查询出来的数据是否为空
+                            # 从匹配的行中提取索引值
+                            stepend_Qcmsindexs = matching_rows_for_stepends.index.tolist()  # [1,3]查询出来的是个列表
+                            if stepend_Qcmsindexs!=[]:#表示end数据能查到，则找第一条数据，画出图
+                                stepend = filtered_dfs.iloc[stepend_Qcmsindexs[0]]  # 结束的某一行数据
+
+                                # 计算持续时间
+                                durationforstep = stepend['KEYTIME'] - stepstart['KEYTIME']
+                                durationforstep = timeChange(durationforstep)
+
+
+                                namefortask=f"kpi发送step={step}指令{stepTransToLanguage(step)}到完成的时间{durationforstep}"
+                                fig.add_trace(go.Scatter(
+                                    x=[stepstart['KEYTIME'], stepstart['KEYTIME'], stepend['KEYTIME'], stepend['KEYTIME'],
+                                       stepstart['KEYTIME']],
+                                    y=[kpistep_min, kpistep_max, kpistep_max, kpistep_min, kpistep_min], fill='toself',
+                                    fillcolor=color_for_kpi, line=dict(color='black'),
+                                    name=namefortask), row=1, col=1)
+                                # # 注意：这里的位置是手动设置的，可能需要根据实际情况调整
+
+                                fig.add_annotation(
+                                    dict(x=stepstart['KEYTIME'] + (stepend['KEYTIME'] - stepstart['KEYTIME']) / 2,
+                                         # x 位置为两个 KEYTIME 的中点
+                                         y=(kpistep_min + kpistep_max) / 2,  # y 位置为矩形高度的一半
+                                         text=f"""{durationforstep}""",
+                                         showarrow=False, xref=f"x1", yref=f"y1"))
+                            else:  # 表示end数据找不到，则以整点结束时间为最后时间画图
+                                # 计算持续时间
+                                durationforstep = strChangeTime(wholeHourTime) - stepstart['KEYTIME']
+                                durationforstep = timeChange(durationforstep)
+
+                                namefortask = f"kpi发送step={step}指令{stepTransToLanguage(step)}到完成的时间{durationforstep}"
+                                fig.add_trace(go.Scatter(
+                                    x=[stepstart['KEYTIME'], stepstart['KEYTIME'], strChangeTime(wholeHourTime),
+                                       strChangeTime(wholeHourTime),
+                                       stepstart['KEYTIME']],
+                                    y=[kpistep_min, kpistep_max, kpistep_max, kpistep_min, kpistep_min], fill='toself',
+                                    fillcolor=color_for_kpi, line=dict(color='black'),
+                                    name=namefortask), row=1, col=1)
+                                # # 注意：这里的位置是手动设置的，可能需要根据实际情况调整
+
+                                fig.add_annotation(
+                                    dict(x=stepstart['KEYTIME'] + (strChangeTime(wholeHourTime) - stepstart['KEYTIME']) / 2,
+                                         # x 位置为两个 KEYTIME 的中点
+                                         y=(kpistep_min + kpistep_max) / 2,  # y 位置为矩形高度的一半
+                                         text=f"""{durationforstep}""",
+                                         showarrow=False, xref=f"x1", yref=f"y1"))
+                    #########################################kpi_mt_step_log逻辑
 
 
 
@@ -778,10 +779,12 @@ if minTime!='' and maxTime!='':#最大和最小时间均能找到
 
                     ###############画出QCMS发送的QC_CONTAINER_TRANSFER的填充图
 
-
-
-
-
+                    # # 更新布局以设置初始的 x 轴范围，并允许缩放
+                    # fig.update_layout(
+                    #     xaxis_range=[minTime, timeChangeStr(strChangeTime(minTime) + timedelta(hours=0.3))],
+                    #     # 设置初始范围为 1 小时
+                    #     xaxis_fixedrange=False  # 允许 x 轴缩放
+                    # )
 
                     filenameFortime = str(wholeHourTime).replace('-', '').replace(' ', '').replace(':', '').replace('.', '')
                     # #打入文件夹的开始时间

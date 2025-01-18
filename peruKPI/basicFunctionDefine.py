@@ -101,7 +101,19 @@ def wholeHourTimeEnds(startTime, endTime):#输入的可以是str也可以是date
         startWholeTime = startWholeTime+timedelta(hours=1)
     return whole_hours#得到的结果是一个lists，但是lists里面是str类型['2024-12-20 20:00:00', '2024-12-20 21:00:00', '2024-12-20 22:00:00']
 
-
+def wholeHourTime3Ends(startTime, endTime):#输入的可以是str也可以是datetime类型：2024-12-20 20:00:00;
+    startWholeTime=wholeHourTimeEnd(startTime)
+    endWholeTime=wholeHourTimeEnd(endTime)
+    # 存储整点时间的列表
+    whole_hours = []
+    # 遍历直到当前时间超过结束时间
+    while startWholeTime <= endWholeTime:
+        # # 获取当前时间的整点时间（将分钟、秒、微秒部分置零）
+        # whole_hour = start_time.replace(minute=0, second=0, microsecond=0)
+        whole_hours.append(startWholeTime.strftime('%Y-%m-%d %H:%M:%S'))
+        # 将当前时间增加一小时
+        startWholeTime = startWholeTime+timedelta(hours=3)
+    return whole_hours#得到的结果是一个lists，但是lists里面是str类型['2024-12-20 20:00:00', '2024-12-20 21:00:00', '2024-12-20 22:00:00']
 def convertUtc_5(inputUtcTime):#将当前时间UTC减去5个小时作为秘鲁利马本地时间
     """
     将UTC时间减去5小时，返回新的datetime对象。
