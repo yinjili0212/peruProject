@@ -215,8 +215,10 @@ def stateTransToLanguage(state):#定义state对应的，转化为其它中文描
         outputLanguage = '故障复位'
     elif state == 18:
         outputLanguage = '不正常减速，设备连锁或故障'
-    elif state not in [11,12,13,14,15,16,17,18]:
-        outputLanguage = f'{state}'
+    elif state == 19:
+        outputLanguage = '着箱'
+    elif state not in [1,2,3,4,5,6,7,8,9,10,11,12,13,15,16,17,18,19]:
+        outputLanguage = "备用"
     return outputLanguage#输出的是一个str描述
 
 def timeChange(td):#将'0 days 00:00:01.749000'格式化为00:00:01格式,td=# 假设你有一个 Timedelta 对象

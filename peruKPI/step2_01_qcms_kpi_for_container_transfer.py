@@ -1,44 +1,46 @@
 from basicFunctionDefine import *
 import sqliteHandle
+import yaml
 
-
+#########
+envlist = yaml.full_load(open('./config.yml', 'r', encoding='utf-8').read()).get('current_env')
 #########
 '''
 1.根据船舶作业的开始时间和结束时间，统计时间段内QCMS抓放记录
 '''
 #########
-o=sqliteHandle.sqliteHandler(r'./kpiforQcms.db')
+o=sqliteHandle.sqliteHandler(envlist['sqllitedbaddress'])
 
 
 
-qcms_kpi_for_container_transfer='qcms_kpi_for_container_transfer'
-qc_tos_task='qc_tos_task'
-qc_container_transfer='qc_container_transfer'
-qc_trolley_task='qc_trolley_task'
+qcms_kpi_for_container_transfer=envlist['qcms_kpi_for_container_transfer_tablename']
+qc_tos_task=envlist['qc_tos_task_tablename']
+qc_container_transfer=envlist['qc_container_transfer_tablename']
+qc_trolley_task=envlist['qc_trolley_task_tablename']
 
 
-# 212427
-# 212507
-VBT_ID=212427
+VBT_ID=envlist['VBT_ID']
 
 # 如果表不存在则创建表
 o.createQcmsKpiForContainerTransferTable(qcms_kpi_for_container_transfer)
 
 stsNos=[103,104,105,106,107,108]
-# stsNos=[103]
 #查询某个岸桥的qc_tos_Task，从而得到整条船作业的时间
 for stsNo_index,stsNo in enumerate(stsNos):#遍历岸桥编号
     #############步骤1：查询当前岸桥当前船舶VBT_ID下作业的开始时间和结束时间
     querySqlForQcTosTasks = f"""select * from {qc_tos_task}  where STS_NO={stsNo} and VBT_ID={VBT_ID} and RESPONSE_TIME!='' order by RESPONSE_TIME asc"""
+    print(querySqlForQcTosTasks)
     QcTosTaskQueryResults = o.query(querySqlForQcTosTasks)
     if len(QcTosTaskQueryResults)>=2:#如果检测到查询出来的数据大于=2条，才可
         minTimeQcTosTask = QcTosTaskQueryResults[0]['RESPONSE_TIME']#这条船的当前岸桥的最小时间,str类型
         maxTimeQcTosTask = QcTosTaskQueryResults[-1]['RESPONSE_TIME']#这条船的当前岸桥的最大时间str类型
+
         #################步骤2:根据计算出来的时间，查询qc_container_transfer表的开始时间和结束时间的TRANS_CHAIN_ID
         querySqlForQcContainerTransfer = f"""select DISTINCT TRANS_CHAIN_ID from {qc_container_transfer} where QC_ID={stsNo} and CREATE_TIME>='{minTimeQcTosTask}' and CREATE_TIME<='{maxTimeQcTosTask}' order by CREATE_TIME asc"""
+        print(querySqlForQcContainerTransfer)
         qcContainerTransferQueryResults = o.query(querySqlForQcContainerTransfer)
         if len(qcContainerTransferQueryResults)!=0:#能查询出来数据
-            ##########步骤3：遍历TRANS_CHAIN_ID在qc_trolley_task能不能查到，查到继续从QC_TOS_TASK中得到TASK_ID和VBT_ID
+            ##########步骤3：遍历TRANS_CHAIN_ID在qc_trolley_task能不能查到，查到继续从qc_tos_task中得到TASK_ID和VBT_ID
             for qcContainerTransferQueryResult in qcContainerTransferQueryResults:
                 querySqlForQcTrolleyTask = f"""select * from {qc_trolley_task} where TRANS_CHAIN_ID='{qcContainerTransferQueryResult['TRANS_CHAIN_ID']}'"""
                 qcTrolleyTaskQueryResults = o.query(querySqlForQcTrolleyTask)

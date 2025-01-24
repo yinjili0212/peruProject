@@ -1,0 +1,24 @@
+
+
+current_env:
+  VBT_ID: 212528
+  sqllitedbaddress: './kpiforQcms.db'
+  qc_tos_task_tablename: 'qc_tos_task'
+  qc_tos_task_his_tablename: 'qc_tos_task_his'
+  kpi_for_qcms_tablename: 'kpi_for_qcms'
+  qc_gantry_instruction_tablename: 'qc_gantry_instruction'
+  qc_trolley_instruction_tablename: 'qc_trolley_instruction'
+  qc_trolley_task_tablename: 'qc_trolley_task'
+  qc_container_transfer_tablename: 'qc_container_transfer'
+  kpi_mt_step_log_tablename: 'kpi_mt_step_log'
+  kpi_mt_state_log_tablename: 'kpi_mt_state_log'
+  qc_tp_interaction_his_tablename: 'qc_tp_interaction_his'
+  qc_event_recorder_his_tablename: 'qc_event_recorder_his'
+  qc_event_define_tablename: 'qc_event_define'
+  mtworkmode_tablename: 'mtworkmode'
+  mtinstructionstatus_tablename: 'mtinstructionstatus'
+  mhabovesafeheight_tablename: 'mhabovesafeheight'
+  qcms_kpi_for_container_transfer_tablename: 'qcms_kpi_for_container_transfer'
+  lognameaddress: './导出数据步骤.log'
+
+
